@@ -5,7 +5,6 @@ import {
     Typography,
     TextField,
     Button,
-    Divider
 } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
@@ -31,7 +30,7 @@ const Signup = () => {
         if (!name || !email || !password) return handleError('All fields are required');
 
         try {
-            const res = await fetch(`https://deploy-mern-app-1-api.vercel.app/auth/signup`, {
+            const res = await fetch("https://deploy-mern-app-1-api.vercel.app/auth/signup", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(signupInfo)
@@ -123,8 +122,8 @@ const Signup = () => {
                     </Button>
                 </form>
 
+                {/* Placeholder for Google Auth (not functional yet) */}
                 <Button
-                    onClick={handleSignup}
                     fullWidth
                     variant="outlined"
                     sx={{

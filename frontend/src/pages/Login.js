@@ -1,15 +1,11 @@
 import React, { useState } from 'react';
-import {
-    Box,
-    Paper,
-    Typography,
-    TextField,
-    Button,
-    Divider
-} from '@mui/material';
+import { Box, Paper, Typography, TextField, Button } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { handleError, handleSuccess } from '../utils';
+import { useGoogleLogin } from '@react-oauth/google';
+import axios from 'axios';
+import { FcGoogle } from 'react-icons/fc';
 
 const Login = () => {
     const [loginInfo, setLoginInfo] = useState({ email: '', password: '' });
@@ -26,26 +22,53 @@ const Login = () => {
         if (!email || !password) return handleError('All fields are required');
 
         try {
-            const res = await fetch(`https://deploy-mern-app-1-api.vercel.app/auth/login`, {
+            const res = await fetch("https://deploy-mern-app-1-api.vercel.app/auth/login", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(loginInfo)
             });
 
-            const { success, message, token, user, error } = await res.json();
+            const responseData = await res.json();
+            const { success, message, jwtToken, name, error } = responseData;
 
             if (success) {
-                localStorage.setItem('token', token);
-                localStorage.setItem('loggedInUser', user.name);
+                localStorage.setItem('token', jwtToken);
+                localStorage.setItem('loggedInUser', name || '');
                 handleSuccess(message);
                 setTimeout(() => navigate('/'), 1000);
             } else {
-                handleError(error?.details?.[0]?.message || message);
+                handleError(error?.details?.[0]?.message || message || 'Login failed');
             }
         } catch (err) {
             handleError(err.message);
         }
     };
+
+    const googleLogin = useGoogleLogin({
+        onSuccess: async (tokenResponse) => {
+            try {
+                const res = await axios.post('https://deploy-mern-app-1-api.vercel.app/auth/google-login', {
+                    token: tokenResponse.access_token
+                });
+
+                const { success, message, jwtToken, name } = res.data;
+
+                if (success) {
+                    localStorage.setItem('token', jwtToken);
+                    localStorage.setItem('loggedInUser', name || '');
+                    handleSuccess('Logged in with Google successfully');
+                    setTimeout(() => navigate('/'), 1000);
+                } else {
+                    handleError('Invalid user. Please register first.');
+                }
+
+            } catch (err) {
+                handleError('Google login failed');
+            }
+        },
+        onError: () => handleError('Google login failed'),
+        scope: 'profile email',
+    });
 
     return (
         <Box sx={{
@@ -76,6 +99,8 @@ const Login = () => {
                         variant="filled"
                         label="Gmail"
                         name="email"
+                        type="email"
+                        autoComplete="email"
                         value={loginInfo.email}
                         onChange={handleChange}
                         InputProps={{ style: { color: '#fff' } }}
@@ -88,6 +113,7 @@ const Login = () => {
                         label="Password"
                         name="password"
                         type="password"
+                        autoComplete="current-password"
                         value={loginInfo.password}
                         onChange={handleChange}
                         InputProps={{ style: { color: '#fff' } }}
@@ -109,7 +135,7 @@ const Login = () => {
                 </form>
 
                 <Button
-                    onClick={handleLogin}
+                    onClick={() => googleLogin()}
                     fullWidth
                     variant="outlined"
                     sx={{
@@ -120,23 +146,24 @@ const Login = () => {
                         fontWeight: "bold",
                         display: "flex",
                         alignItems: "center",
+                        justifyContent: "center",
                         gap: 1,
                         "&:hover": {
                             backgroundColor: "rgba(255,255,255,0.1)",
                         },
                     }}
                 >
-                    <img
-                        src="google-icon.svg"
-                        alt="Google"
-                        style={{ width: 20, height: 20 }}
-                    />
+                    <FcGoogle size={20} />
                     Login with Google
                 </Button>
 
-                <Typography align="center" fontSize="14px">
+                <Typography align="center" fontSize="14px" sx={{ mt: 2 }}>
                     New here?{" "}
-                    <Button component={Link} to="/signup" sx={{ color: '#90caf9', fontWeight: 'bold', textTransform: 'none' }}>
+                    <Button
+                        component={Link}
+                        to="/signup"
+                        sx={{ color: '#90caf9', fontWeight: 'bold', textTransform: 'none' }}
+                    >
                         Register First
                     </Button>
                 </Typography>
