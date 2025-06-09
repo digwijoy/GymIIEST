@@ -14,6 +14,8 @@ import Signup from './pages/Signup';
 import BMICalculator from './pages/BMICalculator';
 import ExercisePredictor from './pages/ExercisePredictor';
 import GymEquipments from './pages/GymEquipments';
+import FitnessPlanner from './pages/FitnessPlanner';
+
 
 const App = () => {
   return (
@@ -30,6 +32,7 @@ const App = () => {
         <Route path="/bmi" element={<BMICalculator />} />
         <Route path="/exercise-predictor" element={<ExercisePredictor />} />
         <Route path="/equipment" element={<GymEquipments />} />
+        <Route path="/fitness-planner" element={<FitnessPlanner />} />
       </Routes>
 
       <GoToTop />

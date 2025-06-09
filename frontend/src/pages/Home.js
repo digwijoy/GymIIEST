@@ -100,8 +100,15 @@ const Home = () => {
             description: 'Reverse Type 2 Diabetes and Prediabetes',
             imageUrl: 'sugar.jpg',
             route: '/equipment'
+        },
+        {
+            title: 'Fitness Planner',
+            description: 'Personalized diet and workout plan',
+            imageUrl: 'planner.jpg',
+            route: '/fitness-planner'
         }
     ];
+
 
     return (
         <Box sx={{ position: 'relative', minHeight: '100vh', overflow: 'hidden' }}>
