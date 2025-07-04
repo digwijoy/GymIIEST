@@ -18,6 +18,7 @@ import GymEquipments from './pages/GymEquipments';
 import FitnessPlanner from './pages/FitnessPlanner';
 import Dashboard from './pages/Dashboard';
 import FitnessPredict from './pages/FitnessPredict';
+import FlaskMLInterface from './pages/FlaskMLInterface';
 
 const App = () => {
   return (
@@ -36,6 +37,7 @@ const App = () => {
         <Route path="/exercise-predictor" element={<ExercisePredictor />} />
         <Route path="/equipment" element={<GymEquipments />} />
         <Route path="/fitness-planner" element={<FitnessPlanner />} />
+        <Route path="/ai-analyser" element={<FlaskMLInterface />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/exercise-recommendation" element={<FitnessPredict />} />
       </Routes>

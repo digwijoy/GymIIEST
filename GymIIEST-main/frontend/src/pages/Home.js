@@ -118,7 +118,14 @@ const Home = () => {
             description: 'Get AI-powered workouts tailored to you',
             imageUrl: 'exercise.jpg',
             route: '/exercise-recommendation'
+        },
+        {
+            title: 'AI Analyser',
+            description: 'Analyse your exercise with AI pose detection',
+            imageUrl: 'exercise.jpg',
+            route: '/ai-analyser'
         }
+
     ];
 
 
