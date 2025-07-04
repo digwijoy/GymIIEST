@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Gym Trainer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="bg-[#111827] min-h-screen flex items-center justify-center p-6">
+    <div class="w-full max-w-5xl rounded-2xl p-8 bg-[#1f2937] shadow-2xl border border-gray-700">
+
+        <h1 class="text-4xl font-bold text-white text-center mb-10">AI Gym Trainer</h1>
+
+        <!-- USER INPUTS -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+            <div>
+                <label class="text-sm text-gray-300">Username:</label>
+                <input id="username" type="text" placeholder="Your name"
+                    class="w-full mt-1 px-4 py-2 rounded-md bg-[#374151] text-white border border-gray-600 focus:ring-2 focus:ring-emerald-500 outline-none" />
+            </div>
+            <div>
+                <label class="text-sm text-gray-300">Reps per set:</label>
+                <input id="repsPerSet" type="number" value="10" min="1"
+                    class="w-full mt-1 px-4 py-2 rounded-md bg-[#374151] text-white border border-gray-600 focus:ring-2 focus:ring-emerald-500 outline-none" />
+            </div>
+            <div>
+                <label class="text-sm text-gray-300">Number of sets:</label>
+                <input id="sets" type="number" value="3" min="1"
+                    class="w-full mt-1 px-4 py-2 rounded-md bg-[#374151] text-white border border-gray-600 focus:ring-2 focus:ring-emerald-500 outline-none" />
+            </div>
+            <div>
+                <label class="text-sm text-gray-300">Rest time (seconds):</label>
+                <input id="restTime" type="number" value="60" min="10"
+                    class="w-full mt-1 px-4 py-2 rounded-md bg-[#374151] text-white border border-gray-600 focus:ring-2 focus:ring-emerald-500 outline-none" />
+            </div>
+        </div>
+
+        <!-- EXERCISE DROPDOWN -->
+        <div class="mb-10">
+            <label for="exerciseSelect" class="text-sm text-gray-300 mb-2 block">Select Exercise:</label>
+            <select id="exerciseSelect"
+                class="w-full px-4 py-2 rounded-md bg-[#374151] text-white border border-gray-600 focus:ring-2 focus:ring-emerald-500 outline-none">
+                <option value="none">-- Select --</option>
+                <option value="bicep_curl">Bicep Curl</option>
+                <option value="lunges">Lunges</option>
+                <option value="squats">Squats</option>
+                <option value="tricep_kickback">Tricep Kickback</option>
+            </select>
+        </div>
+
+        <!-- VIDEO STREAM -->
+        <div
+            class="relative w-full max-w-2xl mx-auto rounded-xl overflow-hidden border border-gray-700 shadow-lg bg-[#111827]">
+            <img id="videoStream" src="" alt="Live AI Trainer Feed" class="w-full h-auto" />
+            <div id="loadingMessage"
+                class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-80 text-white text-lg font-medium">
+                Loading camera... Please select an exercise.
+            </div>
+        </div>
+
+        <!-- STATUS BOX -->
+        <div id="statusBox"
+            class="mt-8 hidden text-white bg-[#1f2937] border border-gray-700 rounded-lg p-4 whitespace-pre-line shadow-inner">
+        </div>
+
+        <!-- GRAPHS -->
+        <div id="graphsContainer" class="mt-12">
+            <h2 class="text-xl font-bold mb-4 text-white">Workout Progress Charts</h2>
+            <canvas id="caloriesChart" height="150"
+                class="bg-[#1f2937] p-4 rounded-xl shadow-lg border border-gray-700"></canvas>
+            <canvas id="repsChart" height="150"
+                class="mt-8 bg-[#1f2937] p-4 rounded-xl shadow-lg border border-gray-700"></canvas>
+        </div>
+
+        <!-- BUTTONS -->
+        <div class="mt-10 flex justify-center gap-6 flex-wrap">
+            <button id="startBtn"
+                class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-all">
+                Start Trainer
+            </button>
+            <button id="stopBtn"
+                class="bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-all">
+                Stop Trainer
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Your JS logic comes here below -->
+</body>
+
+<script>
+    // Your original JS remains unchanged
+    const videoStream = document.getElementById('videoStream');
+    const exerciseSelect = document.getElementById('exerciseSelect');
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const loadingMessage = document.getElementById('loadingMessage');
+    const statusBox = document.getElementById('statusBox');
+    const graphsContainer = document.getElementById('graphsContainer');
+
+    let currentExercise = 'none';
+    let username = null;
+    let statusInterval = null;
+    let restInterval = null;
+    let isResting = false;
+
+    let caloriesChart = null;
+    let repsChart = null;
+
+    function initializeCharts() {
+        const ctxCalories = document.getElementById('caloriesChart').getContext('2d');
+        const ctxReps = document.getElementById('repsChart').getContext('2d');
+
+        caloriesChart = new Chart(ctxCalories, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Calories Burned',
+                    data: [],
+                    fill: true,
+                    borderColor: 'rgba(20, 184, 166, 1)',
+                    backgroundColor: 'rgba(20, 184, 166, 0.2)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                animation: false,
+                plugins: {
+                    legend: { labels: { color: '#e5e7eb' } }
+                },
+                scales: {
+                    x: { ticks: { color: '#e5e7eb' } },
+                    y: { ticks: { color: '#e5e7eb' } }
+                }
+            }
+        });
+
+        repsChart = new Chart(ctxReps, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Total Reps',
+                    data: [],
+                    fill: true,
+                    borderColor: 'rgba(244, 63, 94, 1)',
+                    backgroundColor: 'rgba(244, 63, 94, 0.2)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                animation: false,
+                plugins: {
+                    legend: { labels: { color: '#e5e7eb' } }
+                },
+                scales: {
+                    x: { ticks: { color: '#e5e7eb' } },
+                    y: { ticks: { color: '#e5e7eb' } }
+                }
+            }
+        });
+    }
+
+    function updateCharts(data) {
+        if (!data.rep_history || !data.calorie_history) return;
+
+        const labels = data.rep_history.map(item => {
+            const date = new Date(item.timestamp * 1000);
+            return date.toLocaleTimeString();
+        });
+
+        const calorieData = data.calorie_history.map(item => item.calories);
+        const repData = data.rep_history.map(item => item.total_reps);
+
+        caloriesChart.data.labels = labels;
+        caloriesChart.data.datasets[0].data = calorieData;
+        caloriesChart.update();
+
+        repsChart.data.labels = labels;
+        repsChart.data.datasets[0].data = repData;
+        repsChart.update();
+    }
+
+    function pushZeroCaloriesToGraph() {
+        const timeLabel = new Date().toLocaleTimeString();
+
+        caloriesChart.data.labels.push(timeLabel);
+        caloriesChart.data.datasets[0].data.push(0);
+        caloriesChart.update();
+
+        const lastReps = repsChart.data.datasets[0].data.slice(-1)[0] || 0;
+        repsChart.data.labels.push(timeLabel);
+        repsChart.data.datasets[0].data.push(lastReps);
+        repsChart.update();
+    }
+
+    function startVideoStream() {
+        currentExercise = exerciseSelect.value;
+        if (currentExercise === 'none') {
+            alert('Please select an exercise first!');
+            return;
+        }
+
+        username = document.getElementById('username').value.trim();
+        const repsPerSet = parseInt(document.getElementById('repsPerSet').value);
+        const sets = parseInt(document.getElementById('sets').value);
+        const restTime = parseInt(document.getElementById('restTime').value);
+
+        if (!username) {
+            alert("Please enter your name!");
+            return;
+        }
+
+        fetch('/start_workout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                username,
+                exercise: currentExercise,
+                reps_per_set: repsPerSet,
+                sets: sets,
+                rest_time: restTime
+            })
+        })
+            .then(res => res.json())
+            .then(data => {
+                actuallyStartVideo();
+                initializeCharts();
+                startStatusPolling();
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Error starting workout.");
+            });
+    }
+
+    function actuallyStartVideo() {
+        loadingMessage.style.display = 'flex';
+        loadingMessage.innerText = 'Loading camera... Please wait.';
+        videoStream.src = '';
+
+        setTimeout(() => {
+            videoStream.src = `/video_feed/${currentExercise}?t=${Date.now()}`;
+        }, 200);
+
+        videoStream.onerror = () => {
+            loadingMessage.innerText = '❌ Error loading camera feed. Please check your camera.';
+        };
+
+        const checkStream = setInterval(() => {
+            if (videoStream.complete && videoStream.naturalWidth > 0) {
+                loadingMessage.style.display = 'none';
+                clearInterval(checkStream);
+            }
+        }, 300);
+    }
+
+    function stopVideoStream() {
+        videoStream.src = '';
+        loadingMessage.style.display = 'flex';
+        loadingMessage.innerText = 'Camera stopped. Select an exercise to restart.';
+
+        fetch('/release_camera')
+            .then(res => {
+                if (res.ok) {
+                    console.log('Camera released.');
+                }
+            })
+            .catch(err => {
+                console.error('Error releasing camera:', err);
+            });
+
+        if (statusInterval) {
+            clearInterval(statusInterval);
+            statusInterval = null;
+        }
+        if (restInterval) {
+            clearInterval(restInterval);
+            restInterval = null;
+        }
+        statusBox.style.display = 'none';
+    }
+
+    function startStatusPolling() {
+        if (!username) return;
+        statusBox.style.display = 'block';
+
+        statusInterval = setInterval(() => {
+            fetch(`/workout_status/${username}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        statusBox.textContent = '⚠️ No workout session found.';
+                        return;
+                    }
+
+                    const {
+                        exercise,
+                        current_set,
+                        reps_done_in_set,
+                        reps_per_set,
+                        sets,
+                        workout_complete,
+                        last_message
+                    } = data;
+
+                    if (workout_complete) {
+                        statusBox.textContent =
+                            `🎉 Workout COMPLETE!\n` +
+                            `Exercise: ${exercise}\n` +
+                            `Total Sets: ${sets}`;
+                        stopVideoStream();
+                        alert(`🎉 Workout for ${exercise} completed! Good job!`);
+                    } else {
+                        if (last_message?.includes('Resting')) {
+                            const seconds = parseInt(last_message.match(/\d+/)?.[0]) || 60;
+                            if (!isResting) {
+                                startRestCountdown(seconds, exercise, current_set, sets, reps_done_in_set, reps_per_set);
+                            }
+                        } else {
+                            isResting = false;
+                            statusBox.textContent =
+                                `Exercise: ${exercise}\n` +
+                                `Set: ${current_set}/${sets}\n` +
+                                `Reps: ${reps_done_in_set}/${reps_per_set}\n` +
+                                `${last_message ? `\n${last_message}` : ''}`;
+                        }
+                    }
+
+                    if (!isResting) {
+                        updateCharts(data);
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    statusBox.textContent = '❌ Error fetching workout status.';
+                });
+        }, 1000);
+    }
+
+    function startRestCountdown(duration, exercise, currentSet, sets, repsDone, repsPerSet) {
+        let remaining = duration;
+
+        if (restInterval) clearInterval(restInterval);
+        isResting = true;
+
+        function updateBox() {
+            statusBox.textContent =
+                `✅ Completed set ${currentSet} for ${exercise}.\n` +
+                `😴 Resting... ${remaining} seconds remaining.`;
+
+            pushZeroCaloriesToGraph();
+
+            remaining--;
+
+            if (remaining < 0) {
+                clearInterval(restInterval);
+                restInterval = null;
+                isResting = false;
+            }
+        }
+
+        updateBox();
+        restInterval = setInterval(updateBox, 1000);
+    }
+
+    exerciseSelect.addEventListener('change', (e) => {
+        const selected = e.target.value;
+        if (selected === currentExercise) return;
+
+        currentExercise = selected;
+
+        if (videoStream.src) {
+            stopVideoStream();
+            setTimeout(() => {
+                if (currentExercise !== 'none') {
+                    startVideoStream();
+                }
+            }, 500);
+        }
+    });
+
+    startBtn.addEventListener('click', startVideoStream);
+    stopBtn.addEventListener('click', stopVideoStream);
+    window.addEventListener('beforeunload', stopVideoStream);
+
+    stopVideoStream();
+</script>
+</body>
+
+</html>
