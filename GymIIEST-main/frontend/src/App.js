@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -19,15 +19,29 @@ import FitnessPlanner from './pages/FitnessPlanner';
 import Dashboard from './pages/Dashboard';
 import FitnessPredict from './pages/FitnessPredict';
 import FlaskMLInterface from './pages/FlaskMLInterface';
+import Profile from './pages/UserProfile';
+import { MailOutlineRounded } from '@mui/icons-material';
 
 const App = () => {
+  const location = useLocation();
+
+  // Footer visible on all except Main, Login, Signup
+  const shouldShowFooter = !(
+    location.pathname === '/' ||
+    location.pathname === '/main' ||
+    location.pathname === '/login' ||
+    location.pathname === '/signup'
+  );
+
   return (
     <>
       <Header />
 
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Main />} />
         <Route path="/main" element={<Main />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/developers" element={<Developers />} />
@@ -37,13 +51,13 @@ const App = () => {
         <Route path="/exercise-predictor" element={<ExercisePredictor />} />
         <Route path="/equipment" element={<GymEquipments />} />
         <Route path="/fitness-planner" element={<FitnessPlanner />} />
-        <Route path="/ai-analyser" element={<FlaskMLInterface />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/exercise-recommendation" element={<FitnessPredict />} />
+        <Route path="/ai-analyser" element={<FlaskMLInterface />} />
       </Routes>
 
       <GoToTop />
-      <Footer />
+      {shouldShowFooter && <Footer />}
     </>
   );
 };

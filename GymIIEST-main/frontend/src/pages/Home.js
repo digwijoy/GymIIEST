@@ -1,73 +1,99 @@
 import React, { useState } from 'react';
 import {
     Typography,
-    Avatar,
-    Button,
-    Switch,
     Box,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    TextField,
-    DialogActions,
     Snackbar,
     IconButton,
-    useTheme
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import CloseIcon from '@mui/icons-material/Close';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useNavigate } from 'react-router-dom';
-import ProductCard from '../components/ProductCard';
+
+// ----------------- ProductCard Component (V3) -----------------
+// A more subtle and calming aesthetic with a new color scheme.
+
+const cardVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+};
+
+const ProductCard = ({ title, description, imageUrl, onNext }) => {
+    // New neutral dark background color for the card's text area.
+    const cardBgColor = 'rgba(38, 38, 38, 1)';
+
+    return (
+        <motion.div
+            variants={cardVariants}
+            whileHover={{
+                scale: 1.03,
+                // New subtle green glow on hover.
+                boxShadow: '0px 15px 35px rgba(110, 231, 183, 0.15)',
+            }}
+            transition={{ type: 'spring', stiffness: 300 }}
+            onClick={onNext}
+            style={{
+                position: 'relative',
+                cursor: 'pointer',
+                height: '380px',
+                borderRadius: '20px',
+                overflow: 'hidden',
+                background: `url(${imageUrl})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+            }}
+        >
+            <Box
+                sx={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'flex-end',
+                    p: 3,
+                    color: '#EAEAEA',
+                    // Gradient updated to use the new neutral dark background.
+                    background: `linear-gradient(to top, ${cardBgColor} 30%, rgba(38, 38, 38, 0.7) 50%, transparent 80%)`,
+                }}
+            >
+                <Box>
+                    <Typography variant="h5" component="h3" fontWeight="700">
+                        {title}
+                    </Typography>
+                    <Typography variant="body2" sx={{ opacity: 0.7, mt: 1.5, lineHeight: 1.6 }}>
+                        {description}
+                    </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', opacity: 0.7, mt: 3 }}>
+                    <Typography variant="caption" sx={{ mr: 0.5, fontWeight: '600' }}>Explore</Typography>
+                    <ArrowForwardIcon fontSize="small" />
+                </Box>
+            </Box>
+        </motion.div>
+    );
+};
+
+// ----------------- Home Component (V3) -----------------
+// Featuring a neutral background and calming green accents.
+
+const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.1,
+        },
+    },
+};
 
 const Home = () => {
     const navigate = useNavigate();
-    //const theme = useTheme();
-
-    const [profile, setProfile] = useState({
-        name: 'John Doe',
-        mobile: '9876543210',
-        height: '175',
-        weight: '70',
-        address: 'Howrah, West Bengal',
-        active: true,
-        photo: null
-    });
-
-    const [open, setOpen] = useState(false);
     const [logoutOpen, setLogoutOpen] = useState(false);
-
-    const handleEditOpen = () => setOpen(true);
-    const handleEditClose = () => setOpen(false);
-
-    const handleProfileChange = (e) => {
-        const { name, value } = e.target;
-        setProfile((prev) => ({
-            ...prev,
-            [name]: value
-        }));
-    };
-
-    const handleToggleActive = () => {
-        setProfile((prev) => ({
-            ...prev,
-            active: !prev.active
-        }));
-    };
-
-    const handlePhotoUpload = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setProfile((prev) => ({
-                    ...prev,
-                    photo: reader.result
-                }));
-            };
-            reader.readAsDataURL(file);
-        }
-    };
 
     const handleLogout = () => {
         setLogoutOpen(true);
@@ -77,62 +103,18 @@ const Home = () => {
     };
 
     const cards = [
-        {
-            title: 'BMI Calculator',
-            description: 'Check your BMI for good health',
-            imageUrl: 'bmi.jpeg',
-            route: '/bmi'
-        },
-        {
-            title: 'Exercise Predictor',
-            description: 'Making health easy, one day at a time',
-            imageUrl: 'thumb__5_.jpg',
-            route: '/exercise-predictor'
-        },
-        {
-            title: 'Workout Gear',
-            description: 'Everything you need for your workout',
-            imageUrl: 'workout.jpg',
-            route: '/gear'
-        },
-        {
-            title: 'Gym Equipments',
-            description: 'Reverse Type 2 Diabetes and Prediabetes',
-            imageUrl: 'sugar.jpg',
-            route: '/equipment'
-        },
-        {
-            title: 'Fitness Planner',
-            description: 'Personalized diet and workout plan',
-            imageUrl: 'planner.jpg',
-            route: '/fitness-planner'
-        },
-        {
-            title: 'Slot Booking',
-            description: 'Personalized diet and workout plan',
-            imageUrl: 'bmi.jpg',
-            route: '/dashboard'
-        },
-        {
-            title: 'Exercise Recommendation',
-            description: 'Get AI-powered workouts tailored to you',
-            imageUrl: 'exercise.jpg',
-            route: '/exercise-recommendation'
-        },
-        {
-            title: 'AI Analyser',
-            description: 'Analyse your exercise with AI pose detection',
-            imageUrl: 'exercise.jpg',
-            route: '/ai-analyser'
-        }
-
+        { title: 'BMI Calculator', description: 'Check your Body Mass Index for a healthier life.', imageUrl: 'bmi.jpeg', route: '/bmi' },
+        { title: 'AI Analyser', description: 'Analyse your exercise form with AI pose detection.', imageUrl: 'exercise.jpg', route: '/ai-analyser' },
+        { title: 'Workout Gear', description: 'Everything you need for an effective workout.', imageUrl: 'workout.jpg', route: '/gear' },
+        { title: 'Fitness Planner', description: 'Personalized diet and workout plans just for you.', imageUrl: 'planner.jpg', route: '/fitness-planner' },
+        { title: 'Exercise Predictor', description: 'Making health easy, one day at a time.', imageUrl: 'thumb__5_.jpg', route: '/exercise-predictor' },
+        { title: 'Gym Equipments', description: 'High-quality equipment for your fitness journey.', imageUrl: 'sugar.jpg', route: '/equipment' },
+        { title: 'Slot Booking', description: 'Book your personal training sessions with ease.', imageUrl: 'bmi.jpg', route: '/dashboard' },
+        { title: 'Exercise Recommendation', description: 'Get AI-powered workouts tailored to you.', imageUrl: 'exercise.jpg', route: '/exercise-recommendation' },
     ];
 
-
-
     return (
-        <Box sx={{ position: 'relative', minHeight: '100vh', overflow: 'hidden' }}>
-            {/* Background Video */}
+        <Box sx={{ position: 'relative', minHeight: '100vh', overflowX: 'hidden' }}>
             <video
                 autoPlay
                 loop
@@ -143,14 +125,14 @@ const Home = () => {
                     position: 'fixed',
                     top: 0,
                     left: 0,
-                    width: '100%',
-                    height: '100%',
+                    width: '100vw',
+                    height: '100vh',
                     objectFit: 'cover',
-                    zIndex: -2
+                    zIndex: -2,
                 }}
             />
 
-            {/* Dark overlay to blend with UI */}
+            {/* Background overlay is now a neutral dark charcoal, no blue tones. */}
             <Box
                 sx={{
                     position: 'fixed',
@@ -158,160 +140,73 @@ const Home = () => {
                     left: 0,
                     width: '100%',
                     height: '100%',
-                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                    zIndex: -1
+                    background: 'linear-gradient(to top, rgba(25, 25, 25, 0.9) 0%, rgba(25, 25, 25, 0.5) 100%)',
+                    zIndex: -1,
                 }}
             />
 
             {/* Main Content */}
             <Box
                 sx={{
-                    color: '#fff',
                     display: 'flex',
-                    flexDirection: { xs: 'column', md: 'row' },
-                    padding: { xs: '1rem', md: '2rem' },
-                    gap: { xs: '2rem', md: '2rem' }
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    minHeight: '100vh',
+                    p: { xs: 2, sm: 4, md: 6 },
                 }}
             >
                 <motion.div
-                    initial={{ opacity: 0, x: -50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.5 }}
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate="visible"
+                    style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+                        gap: '2.5rem',
+                        width: '100%',
+                        maxWidth: '1500px',
+                    }}
                 >
-                    <Box
-                        sx={{
-                            width: { xs: '100%', md: 280 },
-                            borderRadius: 3,
-                            backgroundColor: 'rgba(0,0,0,0.7)',
-                            padding: '1.5rem',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            boxShadow: 3
-                        }}
-                    >
-                        <Avatar
-                            src={profile.photo}
-                            sx={{ width: 100, height: 100, mt: 1, mb: 2 }}
+                    {cards.map((card) => (
+                        <ProductCard
+                            key={card.title}
+                            title={card.title}
+                            description={card.description}
+                            imageUrl={card.imageUrl}
+                            onNext={() => navigate(card.route)}
                         />
-                        <input
-                            accept="image/*"
-                            id="upload-photo"
-                            type="file"
-                            style={{ display: 'none' }}
-                            onChange={handlePhotoUpload}
-                        />
-                        <label htmlFor="upload-photo">
-                            <Button variant="contained" component="span" sx={{ mb: 2 }}>
-                                Upload Photo
-                            </Button>
-                        </label>
-                        <Typography fontWeight="bold">Name: {profile.name}</Typography>
-                        <Typography fontWeight="bold">Mobile: {profile.mobile}</Typography>
-                        <Typography fontWeight="bold">Height: {profile.height} cm</Typography>
-                        <Typography fontWeight="bold">Weight: {profile.weight} kg</Typography>
-                        <Typography fontWeight="bold">Address: {profile.address}</Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
-                            <Typography fontWeight="bold">Active</Typography>
-                            <Switch checked={profile.active} color="success" onChange={handleToggleActive} />
-                        </Box>
-                        <Button
-                            variant="outlined"
-                            sx={{ mt: 2, color: '#fff', borderColor: '#fff' }}
-                            onClick={handleEditOpen}
-                        >
-                            Edit Profile
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="error"
-                            sx={{ mt: 2, width: '100%' }}
-                            onClick={handleLogout}
-                        >
-                            Logout
-                        </Button>
-                    </Box>
-                </motion.div>
-
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
-                    style={{ flex: 1 }}
-                >
-                    <Box
-                        sx={{
-                            display: 'grid',
-                            gridTemplateColumns: {
-                                xs: '1fr',
-                                sm: 'repeat(2, 1fr)'
-                            },
-                            gap: '1.5rem',
-                            justifyContent: 'center',
-                            alignItems: 'center'
-                        }}
-                    >
-                        {cards.map((card, idx) => (
-                            <ProductCard
-                                key={idx}
-                                title={card.title}
-                                description={card.description}
-                                imageUrl={card.imageUrl}
-                                onNext={() => navigate(card.route)}
-                                glassmorphic
-                            />
-                        ))}
-                    </Box>
+                    ))}
                 </motion.div>
             </Box>
 
-            <Dialog open={open} onClose={handleEditClose} PaperProps={{ sx: { backgroundColor: '#1f1f1f', color: 'white' } }}>
-                <DialogTitle>Edit Profile</DialogTitle>
-                <DialogContent>
-                    {['name', 'mobile', 'height', 'weight', 'address'].map((field) => (
-                        <TextField
-                            key={field}
-                            margin="dense"
-                            name={field}
-                            label={field.charAt(0).toUpperCase() + field.slice(1)}
-                            fullWidth
-                            value={profile[field]}
-                            onChange={handleProfileChange}
-                            InputLabelProps={{ style: { color: '#bbb' } }}
-                            InputProps={{ style: { color: 'white' } }}
-                            sx={{ mb: 1 }}
-                        />
-                    ))}
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleEditClose} sx={{ color: '#bbb' }}>Cancel</Button>
-                    <Button onClick={handleEditClose} variant="contained">Save</Button>
-                </DialogActions>
-            </Dialog>
-
+            {/* Snackbar updated with the new calm aesthetic. */}
             <Snackbar
                 open={logoutOpen}
                 autoHideDuration={2000}
                 onClose={() => setLogoutOpen(false)}
-                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                sx={{ pb: 2 }}
             >
                 <Box
                     sx={{
                         display: 'flex',
                         alignItems: 'center',
-                        bgcolor: '#1f1f1f',
-                        color: '#0ce600',
-                        border: '1px solid #0ce600',
-                        borderRadius: '6px',
-                        padding: '10px 20px',
-                        boxShadow: 5,
-                        minWidth: '300px'
+                        color: '#EAEAEA',
+                        borderRadius: '12px',
+                        padding: '12px 20px',
+                        minWidth: '320px',
+                        // Using a neutral, slightly transparent dark background.
+                        backgroundColor: 'rgba(38, 38, 38, 0.8)',
+                        backdropFilter: 'blur(10px)',
+                        WebkitBackdropFilter: 'blur(10px)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
                     }}
                 >
-                    <CheckCircleIcon sx={{ mr: 1 }} />
-                    <Typography sx={{ flex: 1 }}>Logout Successful!</Typography>
+                    {/* New calming green accent color. */}
+                    <CheckCircleIcon sx={{ mr: 1.5, color: '#6EE7B7' }} />
+                    <Typography sx={{ flex: 1, fontWeight: '500' }}>Logout Successful!</Typography>
                     <IconButton size="small" onClick={() => setLogoutOpen(false)}>
-                        <CloseIcon sx={{ color: '#0ce600' }} />
+                        <CloseIcon fontSize="small" sx={{ color: '#EAEAEA' }} />
                     </IconButton>
                 </Box>
             </Snackbar>
