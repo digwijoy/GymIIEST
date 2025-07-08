@@ -20,6 +20,7 @@ import Dashboard from './pages/Dashboard';
 import FitnessPredict from './pages/FitnessPredict';
 import FlaskMLInterface from './pages/FlaskMLInterface';
 import Profile from './pages/UserProfile';
+import Gear from './pages/Gear';
 import { MailOutlineRounded } from '@mui/icons-material';
 
 const App = () => {
@@ -54,6 +55,7 @@ const App = () => {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/exercise-recommendation" element={<FitnessPredict />} />
         <Route path="/ai-analyser" element={<FlaskMLInterface />} />
+        <Route path="/gym-rules" element={<Gear />} />
       </Routes>
 
       <GoToTop />

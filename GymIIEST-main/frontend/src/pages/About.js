@@ -35,7 +35,7 @@ const About = () => {
                     <Box
                         component="img"
                         src="/gym.jpeg"
-                        alt="gymIIEST"
+                        alt="GymIIEST"
                         sx={{
                             width: { xs: "100%", md: "500px" },
                             borderRadius: 2,
@@ -46,7 +46,7 @@ const About = () => {
                     {/* Text Section */}
                     <Box>
                         <Typography variant="h4" fontWeight="bold" gutterBottom>
-                            About gymIIEST
+                            About GymIIEST
                         </Typography>
 
                         <Typography
@@ -63,15 +63,15 @@ const About = () => {
                         </Typography>
 
                         <Typography mt={2}>
-                            gymIIEST is a modern, fully air-conditioned gymnasium located at IIEST Shibpur. It’s
+                            GymIIEST is a modern, fully air-conditioned gymnasium located at IIEST Shibpur. It’s
                             open to both boys and girls, providing a clean, safe, and inclusive environment for
                             all students to focus on their physical fitness and well-being.
                         </Typography>
 
                         <Typography mt={2}>
-                            Equipped with high-quality fitness equipment and facilities, gymIIEST helps students
+                            Equipped with high-quality fitness equipment and facilities, GymIIEST helps students
                             stay healthy and relieve academic stress through regular physical activity. Whether
-                            you're into strength training, cardio, or general fitness, gymIIEST has you covered.
+                            you're into strength training, cardio, or general fitness, GymIIEST has you covered.
                         </Typography>
 
                         <Typography mt={2}>

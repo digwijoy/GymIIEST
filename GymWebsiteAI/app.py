@@ -44,6 +44,7 @@ def save_workout(exercise, reps):
     print(f"✅ Workout saved: {data}")
 
 
+
 @app.route('/')
 def index():
     return render_template('index.html')

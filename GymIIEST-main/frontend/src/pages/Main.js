@@ -19,14 +19,14 @@ import {
   Slide // Import Slide for transition
 } from "@mui/material";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; // Removed BrowserRouter import as it's likely provided by the environment
 
 // Transition for the Dialog
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function Main() {
+export default function App() {
   const scrollRef = useRef();
   const navigate = useNavigate();
 
@@ -71,7 +71,6 @@ export default function Main() {
     setFormData({
       firstName: '',
       lastName: '',
-      email: '',
       contactNo: '',
       feedback: ''
     });
@@ -104,21 +103,36 @@ export default function Main() {
     setDialogMessage('');
   };
 
+  // Updated gradient style with the new three-color gradient
   const gradientStyle = {
-    background: "linear-gradient(45deg, rgb(47, 137, 216), rgb(59, 4, 255))",
+    background: `linear-gradient(
+      45deg,
+      rgb(47, 82, 129) 0%,
+      rgb(95, 74, 143) 50%,
+      rgb(151, 67, 158) 100%
+    )`,
     color: "#fff",
     '&:hover': {
       opacity: 0.9,
-      background: "linear-gradient(45deg, rgb(47, 137, 216), rgb(59, 4, 255))"
+      // Darker hover for the new three-color gradient
+      background: `linear-gradient(
+        45deg,
+        rgb(37, 65, 103) 0%,
+        rgb(76, 59, 114) 50%,
+        rgb(120, 53, 126) 100%
+      )`
     }
   };
 
+  // A light matching contrasting blue for highlighting
+  const lightContrastingBlue = '#9DD8E6'; // A soft, desaturated light blue
+
   const programData = [
-    { title: "Muscle Building", desc: "This full-body plan will help maximize your gains and get you in great shape.", icon: "/icons8-treadmill-50.png" },
-    { title: "Fat Loss Workout", desc: "Take your fat loss goals to the next level with workouts designed for men and women.", icon: "/icons8-gym-50.png" },
-    { title: "Cardio Workout", desc: "Our database of free cardio workouts will help you burn some serious calories.", icon: "/icons8-cardio-32.png" },
-    { title: "Diet Plans", desc: "Learn about different approaches to nutrition & find the best plan to suit your goals.", icon: "/list.png" },
-    { title: "Yoga", desc: "Mix it up with a blend of flexibility training and mindfulness in our yoga classes.", icon: "/yoga.png" },
+    { title: "Muscle Building", desc: "This full-body plan will help maximize your gains and get you in great shape.", icon: "/logo1-R.png" },
+    { title: "Fat Loss Workout", desc: "Take your fat loss goals to the next level with workouts designed for men and women.", icon: "/final-R.png" },
+    { title: "Cardio Workout", desc: "Our database of free cardio workouts will help you burn some serious calories.", icon: "/logo3-R.png" },
+    { title: "Diet Plans", desc: "Learn about different approaches to nutrition & find the best plan to suit your goals.", icon: "/ddr1.png" },
+    { title: "Yoga", desc: "Mix it up with a blend of flexibility training and mindfulness in our yoga classes.", icon: "/logo51R.png" },
   ];
 
   // Extended testimonials data to include 6 entries
@@ -164,6 +178,7 @@ export default function Main() {
   };
 
   return (
+    // Removed BrowserRouter here as the environment likely provides it already
     <Box sx={{ bgcolor: "#000", color: "#fff", minHeight: "100vh", overflowX: "hidden" }}>
       <Container maxWidth="xl" sx={{ py: 5 }}>
 
@@ -173,7 +188,7 @@ export default function Main() {
             flex={1}
             sx={{
               position: "relative",
-              p: 3,
+              p: 8,
               backgroundImage: `linear-gradient(#333 1px, transparent 1px),
                                linear-gradient(90deg, #333 1px, transparent 1px)`,
               backgroundSize: "60px 40px",
@@ -187,27 +202,48 @@ export default function Main() {
             <Typography variant="body1" gutterBottom>
               Keep your body fit and sharp with professional trainers and track your progress with precision.
             </Typography>
-            <Box mt={30}>
+            <Box mt={4} display="flex" gap={40}>
               <Button
                 variant="contained"
-                sx={{ mr: 3, ...gradientStyle }}
+                sx={{
+                  backgroundColor: "#1e3a8a", // blue-800
+                  color: "#fff",
+                  fontWeight: "bold",
+                  px: 4,
+                  py: 1.5,
+                  borderRadius: "8px",
+                  '&:hover': {
+                    backgroundColor: "#1d4ed8", // blue-600
+                  },
+                }}
                 onClick={handleGetStartedClick}
               >
-                Get Started
+                GET STARTED
               </Button>
+
               <Button
-                variant="outlined"
-                sx={{ border: "2px solid transparent", ...gradientStyle }}
+                variant="contained"
+                sx={{
+                  backgroundColor: "#6b21a8", // purple-800
+                  color: "#fff",
+                  fontWeight: "bold",
+                  px: 4,
+                  py: 1.5,
+                  borderRadius: "8px",
+                  '&:hover': {
+                    backgroundColor: "#9333ea", // purple-600
+                  },
+                }}
                 onClick={handleWatchVideoClick}
               >
-                Watch Video
+                WATCH VIDEO
               </Button>
             </Box>
           </Box>
           <Box flex={1} mt={{ xs: 5, md: 0 }}>
             <CardMedia
               component="img"
-              image="/rr.png"
+              image="/temp12.jpg"
               alt="Fitness Trainers"
               sx={{ borderRadius: "16px", boxShadow: 3 }}
             />
@@ -262,7 +298,7 @@ export default function Main() {
                   component="img"
                   image={program.icon}
                   alt={program.title}
-                  sx={{ width: 40, height: 40, mb: 2 }}
+                  sx={{ width: 80, height: 80, mb: 2 }}   // Increased size
                 />
                 <CardContent sx={{ p: 0, flexGrow: 1 }}>
                   <Typography variant="h6" gutterBottom>{program.title}</Typography>
@@ -278,6 +314,7 @@ export default function Main() {
                 </Button>
               </Card>
             ))}
+
           </Box>
         </Box>
 
@@ -373,12 +410,12 @@ export default function Main() {
             <Typography
               variant="h6"
               fontWeight="bold"
-              sx={{ color: "deepskyblue", mb: 1, textAlign: "center" }}
+              sx={{ color: lightContrastingBlue, mb: 1, textAlign: "center" }}
             >
               Get In Touch
             </Typography>
             <Typography variant="body2" sx={{ mb: 3, textAlign: "center", color: "#ccc" }}>
-              Email me at <a href="mailto:atinction@gmail.com" style={{ color: "#99ccff", textDecoration: 'none' }}>atinction@gmail.com</a> or use the form below
+              Email me at <a href="mailto:atinction@gmail.com" style={{ color: lightContrastingBlue, textDecoration: 'none' }}>atinction@gmail.com</a> or use the form below
             </Typography>
 
             <Grid container spacing={3} sx={{ width: '88%' }}>
@@ -446,14 +483,19 @@ export default function Main() {
                   variant="filled"
                   InputLabelProps={{ style: { color: "#aaa" } }}
                   InputProps={{ style: { color: "#fff", background: "#2a2a2a", borderRadius: '8px' } }}
-                  sx={{ '& .MuiFilledInput-underline:before': { borderBottom: 'none' }, '& .MuiFilledInput-underline:after': { borderBottom: 'none' }, mb: 2 }} // Added margin-bottom
+                  sx={{ '& .MuiFilledInput-underline:before': { borderBottom: 'none' }, '& .MuiFilledInput-underline:after': { borderBottom: 'none' } }}
                 />
                 <Button
                   variant="contained"
                   onClick={handleSubmit}
                   sx={{
                     mt: 2,
-                    background: "linear-gradient(45deg, rgb(47, 137, 216), rgb(59, 4, 255))",
+                    background: `linear-gradient(
+                      45deg,
+                      rgb(47, 82, 129) 0%,
+                      rgb(95, 74, 143) 50%,
+                      rgb(151, 67, 158) 100%
+                    )`, // New gradient
                     color: "#fff",
                     fontWeight: "bold",
                     position: "relative",
@@ -461,7 +503,12 @@ export default function Main() {
                     py: 1.5,
                     borderRadius: '8px',
                     '&:hover': {
-                      background: "linear-gradient(45deg, rgb(42, 128, 204), rgb(45, 3, 185))"
+                      background: `linear-gradient(
+                        45deg,
+                        rgb(37, 65, 103) 0%,
+                        rgb(76, 59, 114) 50%,
+                        rgb(120, 53, 126) 100%
+                      )` // Darker hover for new gradient
                     }
                   }}
                 >
@@ -490,7 +537,7 @@ export default function Main() {
           }
         }}
       >
-        <DialogTitle sx={{ color: "deepskyblue", textAlign: "center", fontWeight: "bold" }}>
+        <DialogTitle sx={{ color: lightContrastingBlue, textAlign: "center", fontWeight: "bold" }}>
           {"Download App"}
         </DialogTitle>
         <DialogContent sx={{ textAlign: "center" }}>
@@ -502,14 +549,24 @@ export default function Main() {
           <Button
             onClick={handleCloseDialog}
             sx={{
-              background: "linear-gradient(45deg, rgb(47, 137, 216), rgb(59, 4, 255))",
+              background: `linear-gradient(
+                45deg,
+                rgb(47, 82, 129) 0%,
+                rgb(95, 74, 143) 50%,
+                rgb(151, 67, 158) 100%
+              )`, // New gradient
               color: "#fff",
               fontWeight: "bold",
               px: 3,
               py: 1,
               borderRadius: '8px',
               '&:hover': {
-                background: "linear-gradient(45deg, rgb(42, 128, 204), rgb(45, 3, 185))"
+                background: `linear-gradient(
+                  45deg,
+                  rgb(37, 65, 103) 0%,
+                  rgb(76, 59, 114) 50%,
+                  rgb(120, 53, 126) 100%
+                )` // Darker hover for new gradient
               }
             }}
           >

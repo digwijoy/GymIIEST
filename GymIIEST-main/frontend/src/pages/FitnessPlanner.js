@@ -25,6 +25,7 @@ const FitnessPlanner = () => {
     const [form, setForm] = useState({
         height: '',
         weight: '',
+        age: '',
         gender: '',
         goal: '',
         activityLevel: '',
@@ -50,20 +51,21 @@ const FitnessPlanner = () => {
         setWeeklyMeals(null);
 
         try {
-            // --- STEP 1: Request to ML Backend ---
+            // STEP 1: Request ML backend
             const res = await fetch('http://127.0.0.1:8080/api/predict-plan', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     ...form,
                     height: parseFloat(form.height),
-                    weight: parseFloat(form.weight)
+                    weight: parseFloat(form.weight),
+                    age: parseInt(form.age, 10)
                 })
             });
 
             if (!res.ok) {
                 const errorData = await res.json();
-                throw new Error(errorData.error || 'Failed to generate plan from ML backend');
+                throw new Error(errorData.error || 'Failed to generate plan');
             }
 
             const data = await res.json();
@@ -74,43 +76,32 @@ const FitnessPlanner = () => {
                 setNutrition(data.calculated_nutrition);
                 setWeeklyMeals(data.recommended_meals);
 
-                // --- STEP 2: Save data to MERN Backend ---
+                // STEP 2: Save to MERN backend
                 try {
-                    const saveRes = await fetch('http://localhost:8080/api/plans/save-plan', {
+                    await fetch('http://localhost:8080/api/plans/save-plan', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            // Send all original form data
                             height: parseFloat(form.height),
                             weight: parseFloat(form.weight),
+                            age: parseInt(form.age, 10),
                             gender: form.gender,
                             goal: form.goal,
                             activityLevel: form.activityLevel,
                             diet: form.diet,
                             cuisine: form.cuisine,
                             allergens: form.allergens,
-                            // Send ML-generated data with keys matching ML backend's output (often preferred for consistency)
-                            calculated_nutrition: data.calculated_nutrition, // Corrected key
-                            recommended_meals: data.recommended_meals      // Corrected key
-                        }),
+                            calculated_nutrition: data.calculated_nutrition,
+                            recommended_meals: data.recommended_meals
+                        })
                     });
-
-                    if (!saveRes.ok) {
-                        const saveErrorData = await saveRes.json();
-                        console.error("Error saving plan to MERN backend:", saveErrorData.message || 'Unknown error');
-                        // You can set an error state here if you want to notify the user about save failure
-                        // setError("Plan generated but failed to save to your personal history.");
-                    } else {
-                        console.log("Plan successfully saved to MERN backend!");
-                    }
                 } catch (saveErr) {
-                    console.error("Network error while saving plan to MERN backend:", saveErr);
-                    // setError("Plan generated but encountered network error saving to history.");
+                    console.error("Network error saving plan:", saveErr);
                 }
             }
         } catch (err) {
-            console.error("Error during plan generation:", err);
-            setError(err.message || "Something went wrong while generating your plan.");
+            console.error("Error generating plan:", err);
+            setError(err.message || "Something went wrong.");
         } finally {
             setLoading(false);
         }
@@ -149,12 +140,13 @@ const FitnessPlanner = () => {
                         textShadow: '1px 1px 4px rgba(0,0,0,0.7)',
                     }}
                 >
-                    Fitness & Diet Planner
+                    Diet Planner
                 </Typography>
 
                 <form onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
-                        <Grid item xs={12} sm={6}>
+                        {/* Row 1 */}
+                        <Grid item xs={12} sm={4}>
                             <TextField
                                 name="height"
                                 label="Height (cm)"
@@ -165,9 +157,10 @@ const FitnessPlanner = () => {
                                 onChange={handleChange}
                                 variant="filled"
                                 sx={textFieldDarkStyles}
+                                inputProps={{ style: { height: '56px' } }}
                             />
                         </Grid>
-                        <Grid item xs={12} sm={6}>
+                        <Grid item xs={12} sm={4}>
                             <TextField
                                 name="weight"
                                 label="Weight (kg)"
@@ -178,8 +171,25 @@ const FitnessPlanner = () => {
                                 onChange={handleChange}
                                 variant="filled"
                                 sx={textFieldDarkStyles}
+                                inputProps={{ style: { height: '56px' } }}
                             />
                         </Grid>
+                        <Grid item xs={12} sm={4}>
+                            <TextField
+                                name="age"
+                                label="Age"
+                                type="number"
+                                required
+                                fullWidth
+                                value={form.age}
+                                onChange={handleChange}
+                                variant="filled"
+                                sx={textFieldDarkStyles}
+                                inputProps={{ style: { height: '56px' } }}
+                            />
+                        </Grid>
+
+                        {/* Row 2 */}
                         <Grid item xs={12} sm={4}>
                             <TextField
                                 name="gender"
@@ -191,6 +201,7 @@ const FitnessPlanner = () => {
                                 onChange={handleChange}
                                 variant="filled"
                                 sx={textFieldDarkStyles}
+                                SelectProps={{ style: { height: '56px' } }}
                             >
                                 <MenuItem value="male">Male</MenuItem>
                                 <MenuItem value="female">Female</MenuItem>
@@ -208,6 +219,7 @@ const FitnessPlanner = () => {
                                 onChange={handleChange}
                                 variant="filled"
                                 sx={textFieldDarkStyles}
+                                SelectProps={{ style: { height: '56px' } }}
                             >
                                 <MenuItem value="lose">Lose Weight</MenuItem>
                                 <MenuItem value="gain">Gain Weight</MenuItem>
@@ -225,13 +237,16 @@ const FitnessPlanner = () => {
                                 onChange={handleChange}
                                 variant="filled"
                                 sx={textFieldDarkStyles}
+                                SelectProps={{ style: { height: '56px' } }}
                             >
                                 <MenuItem value="sedentary">Sedentary</MenuItem>
                                 <MenuItem value="moderate">Moderate</MenuItem>
                                 <MenuItem value="active">Active</MenuItem>
                             </TextField>
                         </Grid>
-                        <Grid item xs={12} sm={6}>
+
+                        {/* Row 3 */}
+                        <Grid item xs={12} sm={4}>
                             <TextField
                                 name="diet"
                                 select
@@ -242,6 +257,7 @@ const FitnessPlanner = () => {
                                 onChange={handleChange}
                                 variant="filled"
                                 sx={textFieldDarkStyles}
+                                SelectProps={{ style: { height: '56px' } }}
                             >
                                 <MenuItem value="vegetarian">Vegetarian</MenuItem>
                                 <MenuItem value="non-vegetarian">Non-Vegetarian</MenuItem>
@@ -250,7 +266,7 @@ const FitnessPlanner = () => {
                                 <MenuItem value="gluten-free">Gluten-Free</MenuItem>
                             </TextField>
                         </Grid>
-                        <Grid item xs={12} sm={6}>
+                        <Grid item xs={12} sm={4}>
                             <TextField
                                 name="cuisine"
                                 select
@@ -261,6 +277,7 @@ const FitnessPlanner = () => {
                                 onChange={handleChange}
                                 variant="filled"
                                 sx={textFieldDarkStyles}
+                                SelectProps={{ style: { height: '56px' } }}
                             >
                                 {cuisines.map((item) => (
                                     <MenuItem key={item} value={item}>
@@ -269,7 +286,7 @@ const FitnessPlanner = () => {
                                 ))}
                             </TextField>
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid item xs={12} sm={4}>
                             <TextField
                                 name="allergens"
                                 label="Allergens (e.g. nuts, soy)"
@@ -278,6 +295,7 @@ const FitnessPlanner = () => {
                                 onChange={handleChange}
                                 variant="filled"
                                 sx={textFieldDarkStyles}
+                                inputProps={{ style: { height: '56px' } }}
                             />
                         </Grid>
                     </Grid>
@@ -293,13 +311,20 @@ const FitnessPlanner = () => {
                             bgcolor: 'primary.main',
                             '&:hover': {
                                 bgcolor: '#1976d2',
-                                boxShadow: '0 0 10px #2196f3',
+                                boxShadow: '0 0 2px #2196f3',
                             },
+                            '&.Mui-disabled': {
+                                opacity: 1,
+                                color: '#fff',
+                                backgroundColor: '#1976d2',
+                                cursor: 'not-allowed',
+                            }
                         }}
                         disabled={loading}
                     >
                         {loading ? "Generating..." : "Generate 7-Day Meal Plan"}
                     </Button>
+
                 </form>
             </Paper>
 
@@ -471,12 +496,15 @@ const FitnessPlanner = () => {
         </Box>
     );
 };
+
 // Dark TextField Styles
 const textFieldDarkStyles = {
     backgroundColor: '#333',
     '& .MuiFilledInput-root': {
         backgroundColor: '#333',
         color: '#fff',
+        height: '56px',
+        minWidth: '200px'
     },
     '& .MuiInputBase-input': {
         color: '#fff',

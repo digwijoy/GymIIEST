@@ -66,7 +66,7 @@ const Login = () => {
     <Box sx={{ minHeight: '100vh', background: 'url("/gme.jpg") center/cover', display: 'flex', justifyContent: 'center', alignItems: 'center', px: 2 }}>
       <Paper elevation={6} sx={{ backdropFilter: 'blur(10px)', backgroundColor: 'rgba(0,0,0,0.6)', padding: 4, borderRadius: 3, width: 380, color: '#fff' }}>
         <Typography variant="h5" align="center" fontWeight="bold" gutterBottom>
-          Login to gymIIEST
+          Login to GymIIEST
         </Typography>
         <form onSubmit={handleLogin}>
           <TextField fullWidth variant="filled" label="Email" name="email" type="email"

@@ -31,7 +31,7 @@ const Footer = () => {
                                 WebkitTextFillColor: "transparent"
                             }}
                         >
-                            gymIIest - IIEST Shibpur's Gym Hub
+                            GymIIest - IIEST Shibpur's Gym Hub
                         </Typography>
                         <Typography variant="body2" sx={{ color: "#fff", mt: 1 }}>
                             A free air-conditioned gym hub for Boys and Girls.
@@ -137,7 +137,7 @@ const Footer = () => {
                 </Grid>
 
                 <Typography variant="body2" sx={{ textAlign: "center", color: "#fff", mt: 4, fontWeight: "bold" }}>
-                    &copy; 2025, gymIIest. Made with ❤️ by Raunak, Digwijoy. All Rights Reserved.
+                    &copy; 2025, GymIIest. Made with ❤️ by Raunak, Digwijoy. All Rights Reserved.
                 </Typography>
             </Container>
         </Box>
