@@ -53,15 +53,11 @@ const Gear = () => {
 
                     <Grid container spacing={2} mt={2}>
                         <Grid item xs={12} sm={6}>
-                            <Typography variant="h6" sx={{ color: '#69b3f9' }}>Weekdays:</Typography>
-                            <Typography> Morning: 6:00 AM - 8:00 AM (Boys)</Typography>
-                            <Typography> Evening: 4:30 PM - 6:30 PM (Girls)</Typography>
-                            <Typography> Evening: 6:30 PM - 8:15 PM (Boys)</Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <Typography variant="h6" sx={{ color: '#69b3f9' }}>Saturday:</Typography>
-                            <Typography> Morning: 9:00 AM - 1:00 PM (Boys)</Typography>
-                            <Typography> Afternoon: 2:30 PM - 5:30 PM (Girls)</Typography>
+                            <Typography variant="h6" sx={{ color: '#69b3f9' }}>Weekdays (Monday To Saturday):</Typography>
+                            <Typography> Morning: 7:00 AM - 9:00 AM (Boys)</Typography>
+                            <Typography> Morning: 9:30 AM - 11:00 AM (Girls)</Typography>
+                            <Typography> Evening: 5:00 PM - 6:00 PM (Girls)</Typography>
+                            <Typography> Evening: 7:00 PM - 9:00 PM (Boys)</Typography>
                         </Grid>
                     </Grid>
 

@@ -386,7 +386,19 @@ function Dashboard() {
         </h2>
         <Link to="/Home" className="home-button"> Back To Home </Link>
       </div>
-
+      <div className="gym-timings">
+        <h3>🏋️ Gym Timings</h3>
+        <div className="timings-grid">
+          <div>
+            <h4>Weekdays (Monday To Saturday):</h4>
+            <p>Morning: 7:00 AM - 9:00 AM (Boys)</p>
+            <p>Morning: 9:30 AM - 11:00 AM (Girls)</p>
+            <p>Evening: 5:00 PM - 6:00 PM (Girls)</p>
+            <p>Evening: 7:00 PM - 9:00 PM (Boys)</p>
+          </div>
+        </div>
+        <p className="note">NOTE: Gym will be closed on college holidays.</p>
+      </div>
       <div className="booking-form">
         <input type="date" onChange={(e) => setDate(e.target.value)} />
         <input type="time" onChange={(e) => setStartTime(e.target.value)} />

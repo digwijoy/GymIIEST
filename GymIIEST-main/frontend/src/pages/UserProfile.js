@@ -1,4 +1,3 @@
-// src/pages/UserProfile.jsx
 import React, { useState, useEffect } from 'react';
 import {
     Typography,
@@ -17,6 +16,7 @@ import {
     ListItem,
     ListItemText,
     Grid,
+    Button, // Import Button
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import CloseIcon from '@mui/icons-material/Close';
@@ -31,6 +31,7 @@ import FitnessCenterIcon from '@mui/icons-material/FitnessCenter'; // For BMI ic
 import EventAvailableIcon from '@mui/icons-material/EventAvailable'; // Slot Bookings icon
 import SportsGymnasticsIcon from '@mui/icons-material/SportsGymnastics'; // Equipment Bookings icon
 import EditIcon from '@mui/icons-material/Edit'; // Import EditIcon
+import LogoutIcon from '@mui/icons-material/Logout'; // Import LogoutIcon
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -62,8 +63,10 @@ const UserProfile = () => {
         } else {
             setLoading(false);
             setError("User not logged in.");
+            // Optionally, redirect to login if no userId is found on load
+            navigate('/login');
         }
-    }, []);
+    }, [navigate]); // Added navigate to dependency array
 
     useEffect(() => {
         if (!userId) return;
@@ -82,8 +85,9 @@ const UserProfile = () => {
     }, [userId]);
 
     const handleLogout = () => {
-        localStorage.removeItem('userId');
+        localStorage.removeItem('userId'); // Remove userId from local storage
         setSnackbar({ open: true, message: "Logging out...", severity: "success" });
+        // Redirect to login page after a short delay to show snackbar message
         setTimeout(() => navigate('/login'), 1500);
     };
 
@@ -315,6 +319,25 @@ const UserProfile = () => {
                                 }}
                             />
                         </Box>
+                        {/* Logout Button */}
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            startIcon={<LogoutIcon />}
+                            onClick={handleLogout}
+                            sx={{
+                                mt: 3,
+                                bgcolor: 'rgba(255, 4, 4, 1)', // Reverted to purple for the button
+                                '&:hover': {
+                                    bgcolor: 'rgba(179, 27, 27, 1)', // A slightly lighter purple on hover
+                                },
+                                color: '#ffffff',
+                                fontWeight: 'bold',
+                                width: '100%'
+                            }}
+                        >
+                            Logout
+                        </Button>
                     </Box>
                 </Grid>
 
@@ -446,8 +469,8 @@ const UserProfile = () => {
                     />
                 </DialogContent>
                 <DialogActions sx={{ p: 2 }}>
-                    <IconButton onClick={handleEditClose} sx={{ color: '#ff0000' }}>Cancel</IconButton>
-                    <IconButton onClick={handleSaveChanges} sx={{ color: '#0ce600' }}>Save</IconButton>
+                    <Button onClick={handleEditClose} sx={{ color: '#ff0000' }}>Cancel</Button>
+                    <Button onClick={handleSaveChanges} sx={{ color: '#0ce600' }}>Save</Button>
                 </DialogActions>
             </Dialog>
 
