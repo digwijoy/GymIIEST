@@ -38,7 +38,9 @@ mongoose.connect(mongo_url, {
 const corsOptions = {
     origin: [
         "http://localhost:3000",
-        "http://127.0.0.1:3000"
+        "http://127.0.0.1:3000",
+        "https://gym-iiest.vercel.app",
+        "https://gym-iiest-git-main-dig-zs-projects.vercel.app"
     ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
